@@ -1,0 +1,40 @@
+stages:
+  - build
+  - test
+
+.julia.linux:
+  before_script:
+    - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = git@${CI_SERVER_HOST}:" >> ~/.gitconfig
+    - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = https://${CI_SERVER_HOST}/" >> ~/.gitconfig
+
+.julia:1.0:
+  extends:
+    - .julia.linux
+  image: julia:1.0-buster
+
+.julia:1.6:
+  extends:
+    - .julia.linux
+  image: julia:1.6-buster
+
+.julia.build:
+  stage: build
+  script:
+    - julia --project -e 'using Pkg; Pkg.build()'
+
+.julia.test.basic:
+  stage: test
+  script:
+    - julia --project -e 'using Pkg; Pkg.test()'
+
+.julia.test:
+  stage: test
+  script:
+    - julia --project -e 'using Pkg; Pkg.instantiate(); Pkg.add("TestReports"); using TestReports; TestReports.test(; coverage = true)'
+    - julia -e 'using Pkg; Pkg.add("Coverage");
+      using Coverage; cl, tl = get_summary(process_folder());
+      println("(", cl/tl*100, "%) covered")'
+  artifacts:
+    when: always
+    reports:
+      junit: '**/testlog.xml'

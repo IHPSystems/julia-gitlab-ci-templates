@@ -1,0 +1,32 @@
+include: .gitlab-ci_template.yaml
+
+.sample:
+  before_script:
+    - !reference [.julia.linux, before_script]
+    - cd examples/Sample
+
+build:1.0:
+  extends:
+    - .julia:1.0
+    - .sample
+    - .julia.build
+
+build:1.6:
+  extends:
+    - .julia:1.6
+    - .sample
+    - .julia.build
+
+test:1.0:
+  extends:
+    - .julia:1.0
+    - .sample
+    - .julia.test.basic
+  needs: ["build:1.0"]
+
+test:1.6:
+  extends:
+    - .julia:1.6
+    - .sample
+    - .julia.test
+  needs: ["build:1.6"]

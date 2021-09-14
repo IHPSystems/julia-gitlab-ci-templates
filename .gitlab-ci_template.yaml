@@ -12,6 +12,11 @@ stages:
     - .julia.linux
   image: julia:1.0-buster
 
+.julia:1.3:
+  extends:
+    - .julia.linux
+  image: julia:1.3-buster
+
 .julia:1.6:
   extends:
     - .julia.linux

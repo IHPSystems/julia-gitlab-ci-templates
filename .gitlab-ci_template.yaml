@@ -22,6 +22,11 @@ stages:
     - .julia.linux
   image: julia:1.6-buster
 
+.julia:1.7:
+  extends:
+    - .julia.linux
+  image: julia:1.7-buster
+
 .julia.build:
   stage: build
   script:

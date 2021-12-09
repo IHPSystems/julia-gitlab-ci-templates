@@ -54,7 +54,7 @@ test:1.7:
   extends:
     - .julia:1.7
     - .sample
-    - .julia.test
+    - .julia.test.with_reports
   needs: ["build:1.7"]
 
 test.with_threads:1.6:

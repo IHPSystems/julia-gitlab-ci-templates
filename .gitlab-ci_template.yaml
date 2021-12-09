@@ -37,6 +37,11 @@ stages:
   script:
     - julia --project -e 'using Pkg; Pkg.test()'
 
+.julia.test.with_threads:
+  stage: test
+  script:
+    - julia --project -e 'using Pkg; Pkg.test(; coverage = true, julia_args=["--threads=auto"])'
+
 .julia.test:
   stage: test
   script:

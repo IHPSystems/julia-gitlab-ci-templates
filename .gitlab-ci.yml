@@ -70,3 +70,17 @@ test.with_threads:1.7:
     - .sample
     - .julia.test.with_threads
   needs: ["build:1.7"]
+
+test.with_threads.with_reports:1.6:
+  extends:
+    - .julia:1.6
+    - .sample
+    - .julia.test.with_threads.with_reports
+  needs: ["build:1.6"]
+
+test.with_threads.with_reports:1.7:
+  extends:
+    - .julia:1.7
+    - .sample
+    - .julia.test.with_threads.with_reports
+  needs: ["build:1.7"]

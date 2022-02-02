@@ -5,6 +5,12 @@ include: .gitlab-ci_template.yaml
     - !reference [.gitlab.redirect_git_for_ci_server_host, before_script]
     - cd examples/Sample
 
+build:1:
+  extends:
+    - .julia:1
+    - .sample
+    - .julia.build
+
 build:1.0:
   extends:
     - .julia:1.0
@@ -52,6 +58,13 @@ build:1.7:
     - .julia:1.7
     - .sample
     - .julia.build
+
+test:1:
+  extends:
+    - .julia:1
+    - .sample
+    - .julia.test
+  needs: ["build:1"]
 
 test:1.0:
   extends:
@@ -109,6 +122,13 @@ test:1.7:
     - .julia.test
   needs: ["build:1.7"]
 
+test.with_reports:1:
+  extends:
+    - .julia:1
+    - .sample
+    - .julia.test.with_reports
+  needs: ["build:1"]
+
 test.with_reports:1.0:
   extends:
     - .julia:1.0
@@ -157,6 +177,13 @@ test.with_reports:1.7:
     - .sample
     - .julia.test.with_reports
   needs: ["build:1.7"]
+
+test.with_threads:1:
+  extends:
+    - .julia:1
+    - .sample
+    - .julia.test.with_threads
+  needs: ["build:1"]
 
 test.with_threads:1.0:
   extends:
@@ -213,6 +240,13 @@ test.with_threads:1.7:
     - .sample
     - .julia.test.with_threads
   needs: ["build:1.7"]
+
+test.with_threads.with_reports:1:
+  extends:
+    - .julia:1
+    - .sample
+    - .julia.test.with_threads.with_reports
+  needs: ["build:1"]
 
 test.with_threads.with_reports:1.0:
   extends:

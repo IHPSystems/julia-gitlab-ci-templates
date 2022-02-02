@@ -6,6 +6,11 @@ variables:
     - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = git@${CI_SERVER_HOST}:" >> ~/.gitconfig
     - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = https://${CI_SERVER_HOST}/" >> ~/.gitconfig
 
+.julia:1:
+  extends:
+    - .gitlab.redirect_git_for_ci_server_host
+  image: julia:1
+
 .julia:1.0:
   extends:
     - .gitlab.redirect_git_for_ci_server_host

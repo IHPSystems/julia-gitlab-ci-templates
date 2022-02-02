@@ -63,10 +63,14 @@ variables:
      - .julia/packages/
      - .julia/registries/
 
+variables:
+  JULIA_PROJECT_PATH: '@.'
+
 .julia.build:
   stage: build
   script:
     - !reference [.julia.version, script]
+    - cd $JULIA_PROJECT_PATH
     - julia --project -e 'using Pkg; Pkg.build()'
   <<: *julia_cache_template
 
@@ -85,6 +89,7 @@ variables:
   stage: test
   script:
     - !reference [.julia.version, script]
+    - cd $JULIA_PROJECT_PATH
     - julia --project -e 'using Pkg; Pkg.test(; coverage = true)'
     - !reference [.julia.test.coverage, script]
   <<: *julia_cache_template
@@ -93,6 +98,7 @@ variables:
   stage: test
   script:
     - !reference [.julia.version, script]
+    - cd $JULIA_PROJECT_PATH
     - |
       julia --project -e '
         using Pkg
@@ -110,6 +116,7 @@ variables:
   stage: test
   script:
     - !reference [.julia.version, script]
+    - cd $JULIA_PROJECT_PATH
     - |
       julia --project -e '
         using Pkg
@@ -129,6 +136,7 @@ variables:
   stage: test
   script:
     - !reference [.julia.version, script]
+    - cd $JULIA_PROJECT_PATH
     - |
       julia --project -e '
         using Pkg

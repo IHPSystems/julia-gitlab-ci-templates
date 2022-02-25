@@ -11,9 +11,33 @@ build:1.0:
     - .sample
     - .julia.build
 
+build:1.1:
+  extends:
+    - .julia:1.1
+    - .sample
+    - .julia.build
+
+build:1.2:
+  extends:
+    - .julia:1.2
+    - .sample
+    - .julia.build
+
 build:1.3:
   extends:
     - .julia:1.3
+    - .sample
+    - .julia.build
+
+build:1.4:
+  extends:
+    - .julia:1.4
+    - .sample
+    - .julia.build
+
+build:1.5:
+  extends:
+    - .julia:1.5
     - .sample
     - .julia.build
 
@@ -36,21 +60,98 @@ test:1.0:
     - .julia.test
   needs: ["build:1.0"]
 
+test:1.1:
+  extends:
+    - .julia:1.1
+    - .sample
+    - .julia.test
+  needs: ["build:1.1"]
+
+test:1.2:
+  extends:
+    - .julia:1.2
+    - .sample
+    - .julia.test
+  needs: ["build:1.2"]
+
 test:1.3:
+  extends:
+    - .julia:1.3
+    - .sample
+    - .julia.test
+  needs: ["build:1.3"]
+
+test:1.4:
+  extends:
+    - .julia:1.4
+    - .sample
+    - .julia.test
+  needs: ["build:1.4"]
+
+test:1.5:
+  extends:
+    - .julia:1.5
+    - .sample
+    - .julia.test
+  needs: ["build:1.5"]
+
+test:1.6:
+  extends:
+    - .julia:1.6
+    - .sample
+    - .julia.test
+  needs: ["build:1.6"]
+
+test:1.7:
+  extends:
+    - .julia:1.7
+    - .sample
+    - .julia.test
+  needs: ["build:1.7"]
+
+test.with_reports:1.0:
+  extends:
+    - .julia:1.0
+    - .sample
+    - .julia.test.with_reports
+  needs: ["build:1.0"]
+
+test.with_reports:1.2:
+  extends:
+    - .julia:1.2
+    - .sample
+    - .julia.test.with_reports
+  needs: ["build:1.2"]
+
+test.with_reports:1.3:
   extends:
     - .julia:1.3
     - .sample
     - .julia.test.with_reports
   needs: ["build:1.3"]
 
-test:1.6:
+test.with_reports:1.4:
+  extends:
+    - .julia:1.4
+    - .sample
+    - .julia.test.with_reports
+  needs: ["build:1.4"]
+
+test.with_reports:1.5:
+  extends:
+    - .julia:1.5
+    - .sample
+    - .julia.test.with_reports
+  needs: ["build:1.5"]
+
+test.with_reports:1.6:
   extends:
     - .julia:1.6
     - .sample
     - .julia.test.with_reports
   needs: ["build:1.6"]
 
-test:1.7:
+test.with_reports:1.7:
   extends:
     - .julia:1.7
     - .sample
@@ -64,12 +165,40 @@ test.with_threads:1.0:
     - .julia.test.with_threads
   needs: ["build:1.0"]
 
+test.with_threads:1.1:
+  extends:
+    - .julia:1.1
+    - .sample
+    - .julia.test.with_threads
+  needs: ["build:1.1"]
+
+test.with_threads:1.2:
+  extends:
+    - .julia:1.2
+    - .sample
+    - .julia.test.with_threads
+  needs: ["build:1.2"]
+
 test.with_threads:1.3:
   extends:
     - .julia:1.3
     - .sample
     - .julia.test.with_threads
   needs: ["build:1.3"]
+
+test.with_threads:1.4:
+  extends:
+    - .julia:1.4
+    - .sample
+    - .julia.test.with_threads
+  needs: ["build:1.4"]
+
+test.with_threads:1.5:
+  extends:
+    - .julia:1.5
+    - .sample
+    - .julia.test.with_threads
+  needs: ["build:1.5"]
 
 test.with_threads:1.6:
   extends:
@@ -85,12 +214,40 @@ test.with_threads:1.7:
     - .julia.test.with_threads
   needs: ["build:1.7"]
 
+test.with_threads.with_reports:1.0:
+  extends:
+    - .julia:1.0
+    - .sample
+    - .julia.test.with_threads.with_reports
+  needs: ["build:1.0"]
+
+test.with_threads.with_reports:1.2:
+  extends:
+    - .julia:1.2
+    - .sample
+    - .julia.test.with_threads.with_reports
+  needs: ["build:1.2"]
+
 test.with_threads.with_reports:1.3:
   extends:
     - .julia:1.3
     - .sample
     - .julia.test.with_threads.with_reports
   needs: ["build:1.3"]
+
+test.with_threads.with_reports:1.4:
+  extends:
+    - .julia:1.4
+    - .sample
+    - .julia.test.with_threads.with_reports
+  needs: ["build:1.4"]
+
+test.with_threads.with_reports:1.5:
+  extends:
+    - .julia:1.5
+    - .sample
+    - .julia.test.with_threads.with_reports
+  needs: ["build:1.5"]
 
 test.with_threads.with_reports:1.6:
   extends:

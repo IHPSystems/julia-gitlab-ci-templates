@@ -4,7 +4,6 @@ test:1:
   extends:
     - .julia:1
     - .julia.test.with_reports
-
 test.with_threads:1:
   extends:
     - .julia:1

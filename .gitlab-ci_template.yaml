@@ -43,9 +43,14 @@
     - .gitlab.redirect_git_for_ci_server_host
   image: julia:1.7
 
+.julia.version:
+  script:
+    - julia --version
+
 .julia.build:
   stage: build
   script:
+    - !reference [.julia.version, script]
     - julia --project -e 'using Pkg; Pkg.build()'
 
 .julia.test.coverage:
@@ -62,12 +67,14 @@
 .julia.test:
   stage: test
   script:
+    - !reference [.julia.version, script]
     - julia --project -e 'using Pkg; Pkg.test(; coverage = true)'
     - !reference [.julia.test.coverage, script]
 
 .julia.test.with_threads:
   stage: test
   script:
+    - !reference [.julia.version, script]
     - |
       julia --project -e '
         using Pkg
@@ -83,6 +90,7 @@
 .julia.test.with_reports:
   stage: test
   script:
+    - !reference [.julia.version, script]
     - |
       julia --project -e '
         using Pkg
@@ -100,6 +108,7 @@
 .julia.test.with_threads.with_reports:
   stage: test
   script:
+    - !reference [.julia.version, script]
     - |
       julia --project -e '
         using Pkg

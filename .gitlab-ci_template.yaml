@@ -1,3 +1,6 @@
+variables:
+  JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
+
 .gitlab.redirect_git_for_ci_server_host:
   before_script:
     - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = git@${CI_SERVER_HOST}:" >> ~/.gitconfig
@@ -47,11 +50,20 @@
   script:
     - julia --version
 
+.julia.cache: &julia_cache_template
+  cache:
+    key: $CI_COMMIT_REF_SLUG-julia
+    paths:
+     - .julia/artifacts/
+     - .julia/packages/
+     - .julia/registries/
+
 .julia.build:
   stage: build
   script:
     - !reference [.julia.version, script]
     - julia --project -e 'using Pkg; Pkg.build()'
+  <<: *julia_cache_template
 
 .julia.test.coverage:
   script:
@@ -70,6 +82,7 @@
     - !reference [.julia.version, script]
     - julia --project -e 'using Pkg; Pkg.test(; coverage = true)'
     - !reference [.julia.test.coverage, script]
+  <<: *julia_cache_template
 
 .julia.test.with_threads:
   stage: test
@@ -86,6 +99,7 @@
         end
       '
     - !reference [.julia.test.coverage, script]
+  <<: *julia_cache_template
 
 .julia.test.with_reports:
   stage: test
@@ -100,6 +114,7 @@
         TestReports.test(; coverage = true)
       '
     - !reference [.julia.test.coverage, script]
+  <<: *julia_cache_template
   artifacts:
     when: always
     reports:
@@ -123,6 +138,7 @@
         end
       '
     - !reference [.julia.test.coverage, script]
+  <<: *julia_cache_template
   artifacts:
     when: always
     reports:

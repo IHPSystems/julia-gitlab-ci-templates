@@ -56,7 +56,7 @@
         Pkg.add("Coverage")
         using Coverage
         cl, tl = get_summary(process_folder())
-        println("(", cl/tl*100, "%) covered")
+        @info "($(cl/tl*100)%) covered"
       '
 
 .julia.test:

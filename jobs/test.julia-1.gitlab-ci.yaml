@@ -1,9 +1,9 @@
 # include: /templates.gitlab-ci.yaml
 
-test:1:
+test.julia-1:
   variables:
     JULIA_TEST_WITH_THREADS: "false"
     JULIA_TEST_WITH_REPORTS: "false"
   extends:
-    - .julia:1
+    - .julia.julia-image:1
     - .julia.test

@@ -11,61 +11,61 @@ const julia_lts = "1.6"
 const julia_stable = "1.7"
 
 build_job(julia_version::String) = OrderedDict{String,Any}(
-    "build:$julia_version" => OrderedDict{String,Any}(
+    "build.julia-$julia_version" => OrderedDict{String,Any}(
         "extends" => [
-            Symbol(".julia:$julia_version"),
+            Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.build"),
         ]
     )
 )
 
 test_job(julia_version::String) = OrderedDict{String,Any}(
-    "test:$julia_version" => OrderedDict{String,Any}(
+    "test.julia-$julia_version" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
             "JULIA_TEST_WITH_THREADS" => "false",
             "JULIA_TEST_WITH_REPORTS" => "false"
         ),
         "extends" => [
-            Symbol(".julia:$julia_version"),
+            Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
         ]
     )
 )
 
 test_with_threads_job(julia_version::String) = OrderedDict{String,Any}(
-    "test.with_threads:$julia_version" => OrderedDict{String,Any}(
+    "test-with_threads.julia-$julia_version" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
             "JULIA_TEST_WITH_THREADS" => "true",
             "JULIA_TEST_WITH_REPORTS" => "false"
         ),
         "extends" => [
-            Symbol(".julia:$julia_version"),
+            Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
         ]
     )
 )
 
 test_with_reports_job(julia_version::String) = OrderedDict{String,Any}(
-    "test.with_reports:$julia_version" => OrderedDict{String,Any}(
+    "test-with_reports.julia-$julia_version" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
             "JULIA_TEST_WITH_THREADS" => "false",
             "JULIA_TEST_WITH_REPORTS" => "true"
         ),
         "extends" => [
-            Symbol(".julia:$julia_version"),
+            Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
         ]
     )
 )
 
 test_with_threads_with_reports_job(julia_version::String) = OrderedDict{String,Any}(
-    "test.with_threads.with_reports:$julia_version" => OrderedDict{String,Any}(
+    "test-with_threads-with_reports.julia-$julia_version" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
             "JULIA_TEST_WITH_THREADS" => "true",
             "JULIA_TEST_WITH_REPORTS" => "true"
         ),
         "extends" => [
-            Symbol(".julia:$julia_version"),
+            Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
         ]
     )

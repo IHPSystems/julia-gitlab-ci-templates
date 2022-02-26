@@ -1,0 +1,6 @@
+# include: /templates.gitlab-ci.yaml
+
+test.with_threads:1:
+  extends:
+    - .julia:1
+    - .julia.test.with_threads

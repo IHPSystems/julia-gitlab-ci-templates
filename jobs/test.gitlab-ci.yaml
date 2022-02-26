@@ -1,0 +1,3 @@
+include:
+  - /jobs/test.julia-lts.gitlab-ci.yaml
+  - /jobs/test.julia-stable.gitlab-ci.yaml

@@ -1,0 +1,6 @@
+# include: /templates.gitlab-ci.yaml
+
+test:1.0:
+  extends:
+    - .julia:1.0
+    - .julia.test

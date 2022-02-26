@@ -1,3 +1,0 @@
-include:
-  - /jobs/build_job.julia-lts.gitlab-ci.yaml
-  - /jobs/build_job.julia-stable.gitlab-ci.yaml

@@ -19,13 +19,16 @@ build_job(julia_version::String) = OrderedDict{String,Any}(
     )
 )
 
-test_jobs(julia_version::String) = OrderedDict{String,Any}(
+test_job(julia_version::String) = OrderedDict{String,Any}(
     "test:$julia_version" => OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia:$julia_version"),
             Symbol(".julia.test"),
         ]
-    ),
+    )
+)
+
+test_with_threads_job(julia_version::String) = OrderedDict{String,Any}(
     "test.with_threads:$julia_version" => OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia:$julia_version"),
@@ -34,14 +37,17 @@ test_jobs(julia_version::String) = OrderedDict{String,Any}(
     )
 )
 
-test_jobs_with_reports(julia_version::String) = OrderedDict{String,Any}(
-    "test:$julia_version" => OrderedDict{String,Any}(
+test_with_reports_job(julia_version::String) = OrderedDict{String,Any}(
+    "test.with_reports:$julia_version" => OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia:$julia_version"),
             Symbol(".julia.test.with_reports"),
         ]
-    ),
-    "test.with_threads:$julia_version" => OrderedDict{String,Any}(
+    )
+)
+
+test_with_threads_with_reports_job(julia_version::String) = OrderedDict{String,Any}(
+    "test.with_threads.with_reports:$julia_version" => OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia:$julia_version"),
             Symbol(".julia.test.with_threads.with_reports"),
@@ -67,7 +73,7 @@ function generate_build_jobs_file(julia_version::String; julia_version_name = no
     if julia_version_name === nothing
         julia_version_name = julia_version
     end
-    write_job_file("build_job", julia_version_name, build_job(julia_version))
+    write_job_file("build", julia_version_name, build_job(julia_version))
 end
 
 function generate_test_jobs_files()
@@ -83,11 +89,13 @@ function generate_test_jobs_file(julia_version::String; julia_version_name = not
     if julia_version_name === nothing
         julia_version_name = julia_version
     end
-    write_job_file("test_jobs", julia_version_name, test_jobs(julia_version))
-    if julia_version == "1.0" # TestReports not supported on Julia 1.0
+    write_job_file("test", julia_version_name, test_job(julia_version))
+    write_job_file("test-with_threads", julia_version_name, test_with_threads_job(julia_version))
+    if julia_version == "1.1" # TestReports not supported on Julia 1.1
         return
     end
-    write_job_file("test_jobs-with_reports", julia_version_name, test_jobs_with_reports(julia_version))
+    write_job_file("test-with_reports", julia_version_name, test_with_reports_job(julia_version))
+    write_job_file("test-with_threads-with_reports", julia_version_name, test_with_threads_with_reports_job(julia_version))
 end
 
 function write_job_file(jobs_type::String, julia_version::String, job::AbstractDict)

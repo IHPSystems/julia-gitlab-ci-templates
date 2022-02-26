@@ -1,3 +1,0 @@
-include:
-  - /jobs/test_jobs-with_reports.julia-lts.gitlab-ci.yaml
-  - /jobs/test_jobs-with_reports.julia-stable.gitlab-ci.yaml

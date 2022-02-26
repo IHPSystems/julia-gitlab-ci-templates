@@ -74,8 +74,44 @@ variables:
     - julia --project -e 'using Pkg; Pkg.build()'
   <<: *julia_cache_template
 
-.julia.test.coverage:
+.julia.test:
+  stage: test
+  variables:
+    JULIA_TEST_WITH_THREADS: true
+    JULIA_TEST_WITH_REPORTS: true
   script:
+    - !reference [.julia.version, script]
+    - cd $JULIA_PROJECT_PATH
+    - |
+      julia --project -e '
+        @info """
+          Testing...
+          JULIA_TEST_WITH_THREADS: $(ENV["JULIA_TEST_WITH_THREADS"])
+          JULIA_TEST_WITH_REPORTS: $(ENV["JULIA_TEST_WITH_REPORTS"])
+          Sys.CPU_THREADS: $(Sys.CPU_THREADS)
+        """
+        using Pkg
+        if parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+          Pkg.add("TestReports")
+          using TestReports
+        end
+        if !parse(Bool, ENV["JULIA_TEST_WITH_THREADS"]) || VERSION < v"1.5"
+          if parse(Bool, ENV["JULIA_TEST_WITH_THREADS"])
+            ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS
+          end
+          if !parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+            Pkg.test(; coverage = true)
+          else
+            TestReports.test(; coverage = true)
+          end
+        else
+          if !parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+            Pkg.test(; coverage = true, julia_args = ["--threads=auto"])
+          else
+            TestReports.test(; coverage = true, julia_args = ["--threads=auto"])
+          end
+        end
+      '
     - |
       julia -e '
         using Pkg
@@ -84,73 +120,6 @@ variables:
         cl, tl = get_summary(process_folder())
         @info "($(cl/tl*100)%) covered"
       '
-
-.julia.test:
-  stage: test
-  script:
-    - !reference [.julia.version, script]
-    - cd $JULIA_PROJECT_PATH
-    - julia --project -e 'using Pkg; Pkg.test(; coverage = true)'
-    - !reference [.julia.test.coverage, script]
-  <<: *julia_cache_template
-
-.julia.test.with_threads:
-  stage: test
-  script:
-    - !reference [.julia.version, script]
-    - cd $JULIA_PROJECT_PATH
-    - |
-      julia --project -e '
-        using Pkg
-        @static if VERSION >= v"1.5"
-          Pkg.test(; coverage = true, julia_args = ["--threads=auto"])
-        else
-          ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS
-          Pkg.test(; coverage = true)
-        end
-      '
-    - !reference [.julia.test.coverage, script]
-  <<: *julia_cache_template
-
-.julia.test.with_reports:
-  stage: test
-  script:
-    - !reference [.julia.version, script]
-    - cd $JULIA_PROJECT_PATH
-    - |
-      julia --project -e '
-        using Pkg
-        Pkg.instantiate()
-        Pkg.add("TestReports")
-        using TestReports
-        TestReports.test(; coverage = true)
-      '
-    - !reference [.julia.test.coverage, script]
-  <<: *julia_cache_template
-  artifacts:
-    when: always
-    reports:
-      junit: '**/testlog.xml'
-
-.julia.test.with_threads.with_reports:
-  stage: test
-  script:
-    - !reference [.julia.version, script]
-    - cd $JULIA_PROJECT_PATH
-    - |
-      julia --project -e '
-        using Pkg
-        Pkg.instantiate()
-        Pkg.add("TestReports")
-        using TestReports
-        @static if VERSION >= v"1.5"
-          TestReports.test(; coverage = true, julia_args = ["--threads=auto"])
-        else
-          ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS
-          TestReports.test(; coverage = true)
-        end
-      '
-    - !reference [.julia.test.coverage, script]
   <<: *julia_cache_template
   artifacts:
     when: always

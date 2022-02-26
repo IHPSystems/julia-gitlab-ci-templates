@@ -28,6 +28,12 @@ test_job(julia_version::String) = OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
+        ],
+        "needs" => [
+            OrderedDict{String,Any}(
+                "job" => Symbol("build.julia-$julia_version"),
+                "optional" => true
+            )
         ]
     )
 )
@@ -41,6 +47,12 @@ test_with_threads_job(julia_version::String) = OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
+        ],
+        "needs" => [
+            OrderedDict{String,Any}(
+                "job" => Symbol("build.julia-$julia_version"),
+                "optional" => true
+            )
         ]
     )
 )
@@ -54,6 +66,12 @@ test_with_reports_job(julia_version::String) = OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
+        ],
+        "needs" => [
+            OrderedDict{String,Any}(
+                "job" => Symbol("build.julia-$julia_version"),
+                "optional" => true
+            )
         ]
     )
 )
@@ -67,6 +85,12 @@ test_with_threads_with_reports_job(julia_version::String) = OrderedDict{String,A
         "extends" => [
             Symbol(".julia.julia-image:$julia_version"),
             Symbol(".julia.test"),
+        ],
+        "needs" => [
+            OrderedDict{String,Any}(
+                "job" => Symbol("build.julia-$julia_version"),
+                "optional" => true
+            )
         ]
     )
 )

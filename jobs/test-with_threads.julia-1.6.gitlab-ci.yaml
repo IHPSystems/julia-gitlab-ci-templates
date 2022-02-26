@@ -7,3 +7,6 @@ test-with_threads.julia-1.6:
   extends:
     - .julia.julia-image:1.6
     - .julia.test
+  needs:
+    - job: build.julia-1.6
+      optional: true

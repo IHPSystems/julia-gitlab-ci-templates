@@ -7,3 +7,6 @@ test-with_threads-with_reports.julia-1.2:
   extends:
     - .julia.julia-image:1.2
     - .julia.test
+  needs:
+    - job: build.julia-1.2
+      optional: true

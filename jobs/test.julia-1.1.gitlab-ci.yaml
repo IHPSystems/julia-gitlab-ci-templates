@@ -7,3 +7,6 @@ test.julia-1.1:
   extends:
     - .julia.julia-image:1.1
     - .julia.test
+  needs:
+    - job: build.julia-1.1
+      optional: true

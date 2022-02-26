@@ -7,3 +7,6 @@ test-with_reports.julia-1.7:
   extends:
     - .julia.julia-image:1.7
     - .julia.test
+  needs:
+    - job: build.julia-1.7
+      optional: true

@@ -41,6 +41,6 @@ test_variants:
     include:
       - /templates.gitlab-ci.yaml
       - /jobs/build.gitlab-ci.yaml
-      - /jobs/test.gitlab-ci.yaml
+      - /jobs/test.needs_build.gitlab-ci.yaml
     strategy: depend
   needs: []

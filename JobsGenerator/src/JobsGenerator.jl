@@ -30,12 +30,6 @@ test_job(julia_version::String) = OrderedDict{String,Any}(
         "extends" => [
             Symbol(".julia.setup"),
             Symbol(".julia.test"),
-        ],
-        "needs" => [
-            OrderedDict{String,Any}(
-                "job" => Symbol("build.julia-$julia_version"),
-                "optional" => true
-            )
         ]
     )
 )

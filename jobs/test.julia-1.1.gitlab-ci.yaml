@@ -6,6 +6,3 @@ test.julia-1.1:
   extends:
     - .julia.setup
     - .julia.test
-  needs:
-    - job: build.julia-1.1
-      optional: true

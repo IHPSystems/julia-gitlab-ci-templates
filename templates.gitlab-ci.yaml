@@ -86,6 +86,7 @@ variables:
         cl, tl = get_summary(process_folder())
         @info "($(cl/tl*100)%) covered"
       '
+  coverage: '/\(\d+.\d+%\) covered/'
   <<: *julia_cache_template
   artifacts:
     when: always

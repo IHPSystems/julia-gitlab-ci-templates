@@ -1,6 +1,6 @@
 variables:
   JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
-  JULIA_PROJECT_PATH: '@.'
+  CI_JULIA_PROJECT_PATH: '@.'
 
 .gitlab.redirect_git_for_ci_server_host:
   before_script:
@@ -9,10 +9,10 @@ variables:
 
 .julia.setup:
   variables:
-    JULIA_VERSION: 1
+    CI_JULIA_VERSION: 1
   extends:
     - .gitlab.redirect_git_for_ci_server_host
-  image: julia:$JULIA_VERSION
+  image: julia:$CI_JULIA_VERSION
 
 .julia.version:
   script:
@@ -30,27 +30,28 @@ variables:
   stage: build
   script:
     - !reference [.julia.version, script]
-    - cd $JULIA_PROJECT_PATH
+    - cd $CI_JULIA_PROJECT_PATH
     - julia --project -e 'using Pkg; Pkg.build()'
   <<: *julia_cache_template
 
 .julia.test:
   stage: test
   variables:
-    JULIA_TEST_WITH_THREADS: "true"
-    JULIA_TEST_WITH_REPORTS: "true"
+    CI_JULIA_TEST_REPORTS: REPORTS_ON
+    CI_JULIA_TEST_THREADS: THREADS_ON
   script:
     - !reference [.julia.version, script]
-    - cd $JULIA_PROJECT_PATH
+    - cd $CI_JULIA_PROJECT_PATH
     - |
       julia --project -e '
         @info """
           Testing...
-          JULIA_TEST_WITH_THREADS: $(ENV["JULIA_TEST_WITH_THREADS"])
-          JULIA_TEST_WITH_REPORTS: $(ENV["JULIA_TEST_WITH_REPORTS"])
+          CI_JULIA_TEST_THREADS: $(ENV["CI_JULIA_TEST_THREADS"])
+          CI_JULIA_TEST_REPORTS: $(ENV["CI_JULIA_TEST_REPORTS"])
           Sys.CPU_THREADS: $(Sys.CPU_THREADS)
         """
-        using_test_reports = parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+        using_test_reports = ENV["CI_JULIA_TEST_REPORTS"] == "REPORTS_ON"
+        using_threads = ENV["CI_JULIA_TEST_THREADS"] == "THREADS_ON"
         if using_test_reports && VERSION.major == 1 && VERSION.minor == 1
           @info "Not using TestReports on Julia v1.1"
           using_test_reports = false
@@ -60,8 +61,8 @@ variables:
           Pkg.add("TestReports")
           using TestReports
         end
-        if !parse(Bool, ENV["JULIA_TEST_WITH_THREADS"]) || VERSION < v"1.5"
-          if parse(Bool, ENV["JULIA_TEST_WITH_THREADS"])
+        if !using_threads || VERSION < v"1.5"
+          if using_threads
             ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS
           end
           if !using_test_reports

@@ -13,7 +13,7 @@ const julia_stable = "1.7"
 build_job(julia_version::String) = OrderedDict{String,Any}(
     "build.julia-$julia_version" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
-            "JULIA_VERSION" => julia_version
+            "CI_JULIA_VERSION" => julia_version
         ),
         "extends" => [
             Symbol(".julia.setup"),
@@ -25,7 +25,7 @@ build_job(julia_version::String) = OrderedDict{String,Any}(
 test_job(julia_version::String) = OrderedDict{String,Any}(
     "test.julia-$julia_version" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
-            "JULIA_VERSION" => julia_version
+            "CI_JULIA_VERSION" => julia_version
         ),
         "extends" => [
             Symbol(".julia.setup"),

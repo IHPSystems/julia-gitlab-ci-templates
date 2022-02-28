@@ -2,7 +2,7 @@
 
 build.julia-1.7:
   variables:
-    JULIA_VERSION: "1.7"
+    CI_JULIA_VERSION: "1.7"
   extends:
     - .julia.setup
     - .julia.build

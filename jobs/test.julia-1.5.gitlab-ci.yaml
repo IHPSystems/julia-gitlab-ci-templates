@@ -2,7 +2,7 @@
 
 test.julia-1.5:
   variables:
-    JULIA_VERSION: "1.5"
+    CI_JULIA_VERSION: "1.5"
   extends:
     - .julia.setup
     - .julia.test

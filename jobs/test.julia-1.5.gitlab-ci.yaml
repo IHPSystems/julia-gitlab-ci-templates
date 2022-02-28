@@ -1,0 +1,11 @@
+# include: /templates.gitlab-ci.yaml
+
+test.julia-1.5:
+  variables:
+    CI_JULIA_VERSION: "1.5"
+  extends:
+    - .julia.setup
+    - .julia.test
+  needs:
+    - job: build.julia-1.5
+      optional: true

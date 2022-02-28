@@ -1,0 +1,9 @@
+# include: /templates.gitlab-ci.yaml
+
+test:
+  extends:
+    - .julia.setup
+    - .julia.test
+  needs:
+    - job: build
+      optional: true

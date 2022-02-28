@@ -1,0 +1,94 @@
+variables:
+  JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
+  CI_JULIA_PROJECT_PATH: '@.'
+
+.gitlab.redirect_git_for_ci_server_host:
+  before_script:
+    - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = git@${CI_SERVER_HOST}:" >> ~/.gitconfig
+    - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = https://${CI_SERVER_HOST}/" >> ~/.gitconfig
+
+.julia.setup:
+  variables:
+    CI_JULIA_VERSION: 1
+  extends:
+    - .gitlab.redirect_git_for_ci_server_host
+  image: julia:$CI_JULIA_VERSION
+
+.julia.version:
+  script:
+    - julia --version
+
+.julia.cache: &julia_cache_template
+  cache:
+    key: $CI_COMMIT_REF_SLUG-julia
+    paths:
+     - .julia/artifacts/
+     - .julia/packages/
+     - .julia/registries/
+
+.julia.build:
+  stage: build
+  script:
+    - !reference [.julia.version, script]
+    - cd $CI_JULIA_PROJECT_PATH
+    - julia --project -e 'using Pkg; Pkg.build()'
+  <<: *julia_cache_template
+
+.julia.test:
+  stage: test
+  variables:
+    CI_JULIA_TEST_REPORTS: REPORTS_ON
+    CI_JULIA_TEST_THREADS: THREADS_ON
+  script:
+    - !reference [.julia.version, script]
+    - cd $CI_JULIA_PROJECT_PATH
+    - |
+      julia --project -e '
+        @info """
+          Testing...
+          CI_JULIA_TEST_THREADS: $(ENV["CI_JULIA_TEST_THREADS"])
+          CI_JULIA_TEST_REPORTS: $(ENV["CI_JULIA_TEST_REPORTS"])
+          Sys.CPU_THREADS: $(Sys.CPU_THREADS)
+        """
+        using_test_reports = ENV["CI_JULIA_TEST_REPORTS"] == "REPORTS_ON"
+        using_threads = ENV["CI_JULIA_TEST_THREADS"] == "THREADS_ON"
+        if using_test_reports && VERSION.major == 1 && VERSION.minor == 1
+          @info "Not using TestReports on Julia v1.1"
+          using_test_reports = false
+        end
+        using Pkg
+        if using_test_reports
+          Pkg.add("TestReports")
+          using TestReports
+        end
+        if !using_threads || VERSION < v"1.5"
+          if using_threads
+            ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS
+          end
+          if !using_test_reports
+            Pkg.test(; coverage = true)
+          else
+            TestReports.test(; coverage = true)
+          end
+        else
+          if !using_test_reports
+            Pkg.test(; coverage = true, julia_args = ["--threads=auto"])
+          else
+            TestReports.test(; coverage = true, julia_args = ["--threads=auto"])
+          end
+        end
+      '
+    - |
+      julia -e '
+        using Pkg
+        Pkg.add("Coverage")
+        using Coverage
+        cl, tl = get_summary(process_folder())
+        @info "($(cl/tl*100)%) covered"
+      '
+  coverage: '/\(\d+.\d+%\) covered/'
+  <<: *julia_cache_template
+  artifacts:
+    when: always
+    reports:
+      junit: '**/testlog.xml'

@@ -1,0 +1,8 @@
+name = "JobsGenerator"
+uuid = "74c18525-f562-4285-9f07-df2516c1402f"
+authors = ["IHP Systems R&D <research@ihp.dk>"]
+version = "0.1.0"
+
+[deps]
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"

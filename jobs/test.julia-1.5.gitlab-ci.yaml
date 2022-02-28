@@ -2,10 +2,9 @@
 
 test.julia-1.5:
   variables:
-    JULIA_TEST_WITH_THREADS: "false"
-    JULIA_TEST_WITH_REPORTS: "false"
+    JULIA_VERSION: "1.5"
   extends:
-    - .julia.julia-image:1.5
+    - .julia.setup
     - .julia.test
   needs:
     - job: build.julia-1.5

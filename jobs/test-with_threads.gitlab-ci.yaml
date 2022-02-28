@@ -1,3 +1,0 @@
-include:
-  - /jobs/test-with_threads.julia-lts.gitlab-ci.yaml
-  - /jobs/test-with_threads.julia-stable.gitlab-ci.yaml

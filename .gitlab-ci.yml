@@ -6,7 +6,8 @@ include:
   - /jobs/build.julia-1.3.gitlab-ci.yaml
   - /jobs/build.julia-1.4.gitlab-ci.yaml
   - /jobs/build.julia-1.5.gitlab-ci.yaml
-  - /jobs/build.gitlab-ci.yaml
+  - /jobs/build.julia-lts.gitlab-ci.yaml
+  - /jobs/build.julia-stable.gitlab-ci.yaml
   - /jobs/build.julia-1.gitlab-ci.yaml
 
   - /jobs/test.julia-1.0.gitlab-ci.yaml
@@ -15,33 +16,9 @@ include:
   - /jobs/test.julia-1.3.gitlab-ci.yaml
   - /jobs/test.julia-1.4.gitlab-ci.yaml
   - /jobs/test.julia-1.5.gitlab-ci.yaml
-  - /jobs/test.gitlab-ci.yaml
+  - /jobs/test.julia-lts.gitlab-ci.yaml
+  - /jobs/test.julia-stable.gitlab-ci.yaml
   - /jobs/test.julia-1.gitlab-ci.yaml
-
-  - /jobs/test-with_reports.julia-1.0.gitlab-ci.yaml
-  - /jobs/test-with_reports.julia-1.2.gitlab-ci.yaml
-  - /jobs/test-with_reports.julia-1.3.gitlab-ci.yaml
-  - /jobs/test-with_reports.julia-1.4.gitlab-ci.yaml
-  - /jobs/test-with_reports.julia-1.5.gitlab-ci.yaml
-  - /jobs/test-with_reports.gitlab-ci.yaml
-  - /jobs/test-with_reports.julia-1.gitlab-ci.yaml
-
-  - /jobs/test-with_threads.julia-1.0.gitlab-ci.yaml
-  - /jobs/test-with_threads.julia-1.1.gitlab-ci.yaml
-  - /jobs/test-with_threads.julia-1.2.gitlab-ci.yaml
-  - /jobs/test-with_threads.julia-1.3.gitlab-ci.yaml
-  - /jobs/test-with_threads.julia-1.4.gitlab-ci.yaml
-  - /jobs/test-with_threads.julia-1.5.gitlab-ci.yaml
-  - /jobs/test-with_threads.gitlab-ci.yaml
-  - /jobs/test-with_threads.julia-1.gitlab-ci.yaml
-
-  - /jobs/test-with_threads-with_reports.julia-1.0.gitlab-ci.yaml
-  - /jobs/test-with_threads-with_reports.julia-1.2.gitlab-ci.yaml
-  - /jobs/test-with_threads-with_reports.julia-1.3.gitlab-ci.yaml
-  - /jobs/test-with_threads-with_reports.julia-1.4.gitlab-ci.yaml
-  - /jobs/test-with_threads-with_reports.julia-1.5.gitlab-ci.yaml
-  - /jobs/test-with_threads-with_reports.gitlab-ci.yaml
-  - /jobs/test-with_threads-with_reports.julia-1.gitlab-ci.yaml
 
 stages:
   - build
@@ -49,3 +26,21 @@ stages:
 
 variables:
   JULIA_PROJECT_PATH: examples/Sample
+
+test_variants:
+  stage: test
+  parallel:
+    matrix:
+      - JULIA_VERSION: ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1"]
+        JULIA_TEST_WITH_THREADS: ["false", "true"]
+        JULIA_TEST_WITH_REPORTS: ["false", "true"]
+  except:
+    variables:
+      - $JULIA_TEST_WITH_THREADS == "true" && $JULIA_TEST_WITH_REPORTS == "true"
+  trigger:
+    include:
+      - /templates.gitlab-ci.yaml
+      - /jobs/build.gitlab-ci.yaml
+      - /jobs/test.gitlab-ci.yaml
+    strategy: depend
+  needs: []

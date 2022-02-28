@@ -1,3 +1,9 @@
-include:
-  - /jobs/test.julia-lts.gitlab-ci.yaml
-  - /jobs/test.julia-stable.gitlab-ci.yaml
+# include: /templates.gitlab-ci.yaml
+
+test:
+  extends:
+    - .julia.setup
+    - .julia.test
+  needs:
+    - job: build
+      optional: true

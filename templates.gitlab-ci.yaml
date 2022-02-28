@@ -1,55 +1,18 @@
 variables:
   JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
+  JULIA_PROJECT_PATH: '@.'
 
 .gitlab.redirect_git_for_ci_server_host:
   before_script:
     - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = git@${CI_SERVER_HOST}:" >> ~/.gitconfig
     - echo -e "[url \"https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/\"]\n\tinsteadOf = https://${CI_SERVER_HOST}/" >> ~/.gitconfig
 
-.julia.julia-image:1:
+.julia.setup:
+  variables:
+    JULIA_VERSION: 1
   extends:
     - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1
-
-.julia.julia-image:1.0:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.0
-
-.julia.julia-image:1.1:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.1
-
-.julia.julia-image:1.2:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.2
-
-.julia.julia-image:1.3:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.3
-
-.julia.julia-image:1.4:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.4
-
-.julia.julia-image:1.5:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.5
-
-.julia.julia-image:1.6:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.6
-
-.julia.julia-image:1.7:
-  extends:
-    - .gitlab.redirect_git_for_ci_server_host
-  image: julia:1.7
+  image: julia:$JULIA_VERSION
 
 .julia.version:
   script:
@@ -63,9 +26,6 @@ variables:
      - .julia/packages/
      - .julia/registries/
 
-variables:
-  JULIA_PROJECT_PATH: '@.'
-
 .julia.build:
   stage: build
   script:
@@ -77,8 +37,8 @@ variables:
 .julia.test:
   stage: test
   variables:
-    JULIA_TEST_WITH_THREADS: true
-    JULIA_TEST_WITH_REPORTS: true
+    JULIA_TEST_WITH_THREADS: "true"
+    JULIA_TEST_WITH_REPORTS: "true"
   script:
     - !reference [.julia.version, script]
     - cd $JULIA_PROJECT_PATH
@@ -90,8 +50,13 @@ variables:
           JULIA_TEST_WITH_REPORTS: $(ENV["JULIA_TEST_WITH_REPORTS"])
           Sys.CPU_THREADS: $(Sys.CPU_THREADS)
         """
+        using_test_reports = parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+        if using_test_reports && VERSION.major == 1 && VERSION.minor == 1
+          @info "Not using TestReports on Julia v1.1"
+          using_test_reports = false
+        end
         using Pkg
-        if parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+        if using_test_reports
           Pkg.add("TestReports")
           using TestReports
         end
@@ -99,13 +64,13 @@ variables:
           if parse(Bool, ENV["JULIA_TEST_WITH_THREADS"])
             ENV["JULIA_NUM_THREADS"] = Sys.CPU_THREADS
           end
-          if !parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+          if !using_test_reports
             Pkg.test(; coverage = true)
           else
             TestReports.test(; coverage = true)
           end
         else
-          if !parse(Bool, ENV["JULIA_TEST_WITH_REPORTS"])
+          if !using_test_reports
             Pkg.test(; coverage = true, julia_args = ["--threads=auto"])
           else
             TestReports.test(; coverage = true, julia_args = ["--threads=auto"])

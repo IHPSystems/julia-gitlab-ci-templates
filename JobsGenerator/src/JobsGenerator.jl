@@ -12,8 +12,11 @@ const julia_stable = "1.7"
 
 build_job(julia_version::String) = OrderedDict{String,Any}(
     "build.julia-$julia_version" => OrderedDict{String,Any}(
+        "variables" => OrderedDict{String,Any}(
+            "JULIA_VERSION" => julia_version
+        ),
         "extends" => [
-            Symbol(".julia.julia-image:$julia_version"),
+            Symbol(".julia.setup"),
             Symbol(".julia.build"),
         ]
     )
@@ -22,68 +25,10 @@ build_job(julia_version::String) = OrderedDict{String,Any}(
 test_job(julia_version::String) = OrderedDict{String,Any}(
     "test.julia-$julia_version" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
-            "JULIA_TEST_WITH_THREADS" => "false",
-            "JULIA_TEST_WITH_REPORTS" => "false"
+            "JULIA_VERSION" => julia_version
         ),
         "extends" => [
-            Symbol(".julia.julia-image:$julia_version"),
-            Symbol(".julia.test"),
-        ],
-        "needs" => [
-            OrderedDict{String,Any}(
-                "job" => Symbol("build.julia-$julia_version"),
-                "optional" => true
-            )
-        ]
-    )
-)
-
-test_with_threads_job(julia_version::String) = OrderedDict{String,Any}(
-    "test-with_threads.julia-$julia_version" => OrderedDict{String,Any}(
-        "variables" => OrderedDict{String,Any}(
-            "JULIA_TEST_WITH_THREADS" => "true",
-            "JULIA_TEST_WITH_REPORTS" => "false"
-        ),
-        "extends" => [
-            Symbol(".julia.julia-image:$julia_version"),
-            Symbol(".julia.test"),
-        ],
-        "needs" => [
-            OrderedDict{String,Any}(
-                "job" => Symbol("build.julia-$julia_version"),
-                "optional" => true
-            )
-        ]
-    )
-)
-
-test_with_reports_job(julia_version::String) = OrderedDict{String,Any}(
-    "test-with_reports.julia-$julia_version" => OrderedDict{String,Any}(
-        "variables" => OrderedDict{String,Any}(
-            "JULIA_TEST_WITH_THREADS" => "false",
-            "JULIA_TEST_WITH_REPORTS" => "true"
-        ),
-        "extends" => [
-            Symbol(".julia.julia-image:$julia_version"),
-            Symbol(".julia.test"),
-        ],
-        "needs" => [
-            OrderedDict{String,Any}(
-                "job" => Symbol("build.julia-$julia_version"),
-                "optional" => true
-            )
-        ]
-    )
-)
-
-test_with_threads_with_reports_job(julia_version::String) = OrderedDict{String,Any}(
-    "test-with_threads-with_reports.julia-$julia_version" => OrderedDict{String,Any}(
-        "variables" => OrderedDict{String,Any}(
-            "JULIA_TEST_WITH_THREADS" => "true",
-            "JULIA_TEST_WITH_REPORTS" => "true"
-        ),
-        "extends" => [
-            Symbol(".julia.julia-image:$julia_version"),
+            Symbol(".julia.setup"),
             Symbol(".julia.test"),
         ],
         "needs" => [
@@ -130,12 +75,6 @@ function generate_test_jobs_file(julia_version::String; julia_version_name = not
         julia_version_name = julia_version
     end
     write_job_file("test", julia_version_name, test_job(julia_version))
-    write_job_file("test-with_threads", julia_version_name, test_with_threads_job(julia_version))
-    if julia_version == "1.1" # TestReports not supported on Julia 1.1
-        return
-    end
-    write_job_file("test-with_reports", julia_version_name, test_with_reports_job(julia_version))
-    write_job_file("test-with_threads-with_reports", julia_version_name, test_with_threads_with_reports_job(julia_version))
 end
 
 function write_job_file(jobs_type::String, julia_version::String, job::AbstractDict)

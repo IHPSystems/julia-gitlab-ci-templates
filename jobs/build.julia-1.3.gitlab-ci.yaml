@@ -1,6 +1,8 @@
 # include: /templates.gitlab-ci.yaml
 
 build.julia-1.3:
+  variables:
+    JULIA_VERSION: "1.3"
   extends:
-    - .julia.julia-image:1.3
+    - .julia.setup
     - .julia.build

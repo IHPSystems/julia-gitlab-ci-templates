@@ -1,6 +1,6 @@
 variables:
   JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
-  CI_JULIA_PROJECT_PATH: '@.'
+  CI_JULIA_PROJECT_PATH: "."
 
 .gitlab.redirect_git_for_ci_server_host:
   before_script:

@@ -74,6 +74,7 @@ variables:
         Pkg.activate()
         Pkg.add("JET")
         Pkg.activate(".")
+        Pkg.instantiate()
         using JET
         result = report_file(ENV["CI_JULIA_JET_FILE_PATH"]; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
         println(result)
@@ -97,6 +98,7 @@ variables:
         Pkg.activate()
         Pkg.add("JET")
         Pkg.activate(".")
+        Pkg.instantiate()
         using JET
         result = report_package(Pkg.project().name; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
         println(result)

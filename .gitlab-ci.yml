@@ -1,5 +1,9 @@
 include:
   - /templates.gitlab-ci.yaml
+
+  - /jobs/analyze_package.gitlab-ci.yaml
+  - /jobs/analyze_tests.gitlab-ci.yaml
+
   - /jobs/build.julia-1.0.gitlab-ci.yaml
   - /jobs/build.julia-1.1.gitlab-ci.yaml
   - /jobs/build.julia-1.2.gitlab-ci.yaml

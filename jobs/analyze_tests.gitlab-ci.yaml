@@ -1,0 +1,7 @@
+# include: /templates.gitlab-ci.yaml
+
+analyze_tests:
+  extends:
+    - .julia.setup
+    - .julia.jet_report_file
+  needs: []

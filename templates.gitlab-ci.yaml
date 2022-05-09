@@ -57,6 +57,54 @@ variables:
     - "[[ -d $TMP_JULIA_DEPOT_PATH ]] && mv $TMP_JULIA_DEPOT_PATH $JULIA_DEPOT_PATH"
   <<: *julia_cache_template
 
+.julia.jet:
+  variables:
+    CI_JULIA_JET_TARGET_DEFINED_MODULES: 'false'
+
+.julia.jet_report_file:
+  extends:
+    - .julia.jet
+  stage: test
+  script:
+    - !reference [.julia.version, script]
+    - cd $CI_JULIA_PROJECT_PATH
+    - |
+      julia --project --eval '
+        using Pkg
+        Pkg.activate()
+        Pkg.add("JET")
+        Pkg.activate(".")
+        using JET
+        result = report_file(ENV["CI_JULIA_JET_FILE_PATH"]; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
+        println(result)
+        errors_found = !isempty(result.res.toplevel_error_reports) || !isempty(result.res.inference_error_reports)
+        exit(!errors_found ? 0 : 1)
+      '
+  variables:
+    CI_JULIA_JET_FILE_PATH: test/runtests.jl
+  <<: *julia_cache_template
+
+.julia.jet_report_package:
+  extends:
+    - .julia.jet
+  stage: test
+  script:
+    - !reference [.julia.version, script]
+    - cd $CI_JULIA_PROJECT_PATH
+    - |
+      julia --project --eval '
+        using Pkg
+        Pkg.activate()
+        Pkg.add("JET")
+        Pkg.activate(".")
+        using JET
+        result = report_package(Pkg.project().name; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
+        println(result)
+        errors_found = !isempty(result.res.toplevel_error_reports) || !isempty(result.res.inference_error_reports)
+        exit(!errors_found ? 0 : 1)
+      '
+  <<: *julia_cache_template
+
 .julia.test:
   stage: test
   variables:

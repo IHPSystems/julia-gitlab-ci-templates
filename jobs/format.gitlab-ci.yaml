@@ -1,0 +1,7 @@
+# include: /templates.gitlab-ci.yaml
+
+format:
+  extends:
+    - .julia.setup
+    - .julia.format
+  needs: []

@@ -34,6 +34,29 @@ variables:
     - julia --project -e 'using Pkg; Pkg.build()'
   <<: *julia_cache_template
 
+.julia.format:
+  stage: test
+  script:
+    - !reference [.julia.version, script]
+    - export TMP_JULIA_DEPOT_PATH=`mktemp -u`
+    - "[[ -d $JULIA_DEPOT_PATH ]] && mv $JULIA_DEPOT_PATH $TMP_JULIA_DEPOT_PATH"
+    - |
+      JULIA_DEPOT_PATH=$TMP_JULIA_DEPOT_PATH julia --eval '
+        using Pkg
+        Pkg.add("JuliaFormatter")
+        using JuliaFormatter
+        @info "Verifying formatting of $(ENV["CI_JULIA_PROJECT_PATH"])"
+        properly_formatted = format(ENV["CI_JULIA_PROJECT_PATH"]; verbose = true)
+        if properly_formatted
+          @info "Formatting verified."
+        else
+          @warn "Formatting verification failed: Some files are not properly formatted!"
+        end
+        exit(properly_formatted ? 0 : 1)
+      '
+    - "[[ -d $TMP_JULIA_DEPOT_PATH ]] && mv $TMP_JULIA_DEPOT_PATH $JULIA_DEPOT_PATH"
+  <<: *julia_cache_template
+
 .julia.test:
   stage: test
   variables:

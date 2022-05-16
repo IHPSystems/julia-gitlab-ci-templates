@@ -130,13 +130,11 @@ variables:
           using_test_reports = false
         end
         using Pkg
-        manifest_path = joinpath(dirname(Base.active_project()), "Manifest.toml")
-        if VERSION >= v"1.7" && isfile(manifest_path) && Base.is_v1_format_manifest(Base.parsed_toml(manifest_path))
-          @warn "Updating manifest file at `$manifest_path` in order to add TestReports."
-          Pkg.upgrade_manifest()
-        end
+        Pkg.instantiate()
         if using_test_reports
+          Pkg.activate()
           Pkg.add("TestReports")
+          Pkg.activate(".")
           using TestReports
         end
         if !using_threads || VERSION < v"1.5"

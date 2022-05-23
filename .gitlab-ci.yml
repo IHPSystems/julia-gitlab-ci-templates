@@ -1,9 +1,6 @@
 include:
   - /templates.gitlab-ci.yaml
 
-  - /jobs/analyze_package.gitlab-ci.yaml
-  - /jobs/analyze_tests.gitlab-ci.yaml
-
   - /jobs/build.julia-1.0.gitlab-ci.yaml
   - /jobs/build.julia-1.1.gitlab-ci.yaml
   - /jobs/build.julia-1.2.gitlab-ci.yaml
@@ -32,6 +29,34 @@ stages:
 
 variables:
   CI_JULIA_PROJECT_PATH: examples/Sample
+
+analyze_package:
+  stage: test
+  parallel:
+    matrix:
+      - CI_JULIA_JET_ANALYZER: ["JET.JETAnalyzer", "JET.OptAnalyzer"]
+        CI_JULIA_JET_MODE: ["basic", "sound", "typo"]
+        CI_JULIA_JET_TARGET_DEFINED_MODULES: ['false', 'true']
+  trigger:
+    include:
+      - /templates.gitlab-ci.yaml
+      - /jobs/analyze_package.gitlab-ci.yaml
+    strategy: depend
+  needs: []
+
+analyze_tests:
+  stage: test
+  parallel:
+    matrix:
+      - CI_JULIA_JET_ANALYZER: ["JET.JETAnalyzer"] # JET.OptAnalyzer skipped - reports errors in Julia Base (Test)
+        CI_JULIA_JET_MODE: ["basic", "typo"] # sound mode skipped - reports errors in Julia Base
+        CI_JULIA_JET_TARGET_DEFINED_MODULES: ['false', 'true']
+  trigger:
+    include:
+      - /templates.gitlab-ci.yaml
+      - /jobs/analyze_tests.gitlab-ci.yaml
+    strategy: depend
+  needs: []
 
 test_variants:
   stage: test

@@ -59,7 +59,9 @@ variables:
 
 .julia.jet:
   variables:
-    CI_JULIA_JET_TARGET_DEFINED_MODULES: 'false'
+    CI_JULIA_JET_ANALYZER: JET.JETAnalyzer # e.g. JET.JETAnalyzer, JET.OptAnalyzer or other subtype of JET.AbstractAnalyzer
+    CI_JULIA_JET_MODE: basic # e.g. basic, sound, typo - cf. https://aviatesk.github.io/JET.jl/dev/jetanalysis/#JET.JETAnalyzer
+    CI_JULIA_JET_TARGET_DEFINED_MODULES: 'false' # Cf. https://aviatesk.github.io/JET.jl/dev/config/#toplevel-config
 
 .julia.jet_report_file:
   extends:
@@ -76,9 +78,19 @@ variables:
         Pkg.activate(".")
         Pkg.instantiate()
         using JET
-        result = report_file(ENV["CI_JULIA_JET_FILE_PATH"]; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
-        println(result)
+        analysis_target = ENV["CI_JULIA_JET_FILE_PATH"]
+        analyzer = eval(Meta.parse(ENV["CI_JULIA_JET_ANALYZER"]))
+        mode = Symbol(ENV["CI_JULIA_JET_MODE"])
+        target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"])
+        @info "Analyzing $analysis_target using $analyzer with mode $mode$(!target_defined_modules ? "" : ", and target_defined_modules")"
+        result = report_file(analysis_target; analyzer, mode, target_defined_modules)
         errors_found = !isempty(JET.get_reports(result))
+        if errors_found
+          @warn "Analysis completed with errors:"
+        else
+          @info "Analysis completed."
+        end
+        print(result)
         exit(!errors_found ? 0 : 1)
       '
   variables:
@@ -100,9 +112,19 @@ variables:
         Pkg.activate(".")
         Pkg.instantiate()
         using JET
-        result = report_package(Pkg.project().name; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
-        println(result)
+        analysis_target = Pkg.project().name
+        analyzer = eval(Meta.parse(ENV["CI_JULIA_JET_ANALYZER"]))
+        mode = Symbol(ENV["CI_JULIA_JET_MODE"])
+        target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"])
+        @info "Analyzing $analysis_target using $analyzer with mode $mode$(!target_defined_modules ? "" : ", and target_defined_modules")"
+        result = report_package(analysis_target; analyzer, mode, target_defined_modules)
         errors_found = !isempty(JET.get_reports(result))
+        if errors_found
+          @warn "Analysis completed with errors:"
+        else
+          @info "Analysis completed."
+        end
+        print(result)
         exit(!errors_found ? 0 : 1)
       '
   <<: *julia_cache_template

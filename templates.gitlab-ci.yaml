@@ -78,7 +78,7 @@ variables:
         using JET
         result = report_file(ENV["CI_JULIA_JET_FILE_PATH"]; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
         println(result)
-        errors_found = !isempty(result.res.toplevel_error_reports) || !isempty(result.res.inference_error_reports)
+        errors_found = !isempty(JET.get_reports(result))
         exit(!errors_found ? 0 : 1)
       '
   variables:
@@ -102,7 +102,7 @@ variables:
         using JET
         result = report_package(Pkg.project().name; target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"]))
         println(result)
-        errors_found = !isempty(result.res.toplevel_error_reports) || !isempty(result.res.inference_error_reports)
+        errors_found = !isempty(JET.get_reports(result))
         exit(!errors_found ? 0 : 1)
       '
   <<: *julia_cache_template

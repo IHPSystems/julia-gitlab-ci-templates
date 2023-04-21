@@ -53,14 +53,17 @@ analyze_tests:
       - CI_JULIA_JET_VERSION:
           - "0.7.11"
           - "latest"
-        CI_JULIA_JET_MODE: ["basic"]
-        CI_JULIA_JET_TARGET_DEFINED_MODULES: ["true"] # "false" skipped - reports errors in Julia Test
-      # sound mode skipped - reports errors in Julia Base
+        CI_JULIA_JET_ANALYZER: ["JET.JETAnalyzer"]
+        CI_JULIA_JET_MODE: ["basic", "typo"] # sound mode skipped - reports errors in Julia Base
+        CI_JULIA_JET_TARGET_DEFINED_MODULES: ["false", "true"]
       - CI_JULIA_JET_VERSION:
           - "0.7.11"
           - "latest"
-        CI_JULIA_JET_MODE: ["typo"]
-        CI_JULIA_JET_TARGET_DEFINED_MODULES: ["false", "true"]
+        CI_JULIA_JET_ANALYZER: ["JET.OptAnalyzer"]
+        CI_JULIA_JET_TARGET_DEFINED_MODULES: ["true"] # "false" reports errors in Julia Test
+  except:
+    variables:
+      - $CI_JULIA_JET_ANALYZER == "JET.JETAnalyzer" && $CI_JULIA_JET_MODE == "basic" && $CI_JULIA_JET_TARGET_DEFINED_MODULES == "false" # reports errors in Julia Test
   trigger:
     include:
       - /templates.gitlab-ci.yaml

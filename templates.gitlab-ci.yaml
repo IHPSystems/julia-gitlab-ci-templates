@@ -83,10 +83,21 @@ variables:
         Pkg.instantiate()
         using JET
         analysis_target = ENV["CI_JULIA_JET_FILE_PATH"]
+        analyzer_type = eval(Meta.parse(ENV["CI_JULIA_JET_ANALYZER"]))
         mode = Symbol(ENV["CI_JULIA_JET_MODE"])
         target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"])
-        @info "Analyzing $analysis_target with mode $mode$(!target_defined_modules ? "" : ", and target_defined_modules")"
-        result = report_file(analysis_target; mode, target_defined_modules)
+        if analyzer_type == JET.JETAnalyzer
+          jetconfigs = (mode = mode, target_defined_modules = target_defined_modules)
+          @info "Analyzing file $analysis_target using $analyzer_type with $jetconfigs"
+          result = report_file(analysis_target; jetconfigs...)
+        elseif analyzer_type == JET.OptAnalyzer
+          jetconfigs = (target_defined_modules = target_defined_modules,)
+          analyzer = analyzer_type(; jetconfigs...)
+          @info "Analyzing file $analysis_target using $analyzer_type with $jetconfigs"
+          result = JET.analyze_and_report_file!(analyzer, analysis_target; jetconfigs...)
+        else
+          @warn "Unknown analyzer: $analyzer_type"
+        end
         errors_found = !isempty(JET.get_reports(result))
         if errors_found
           @warn "Analysis completed with errors:"
@@ -97,6 +108,7 @@ variables:
         exit(!errors_found ? 0 : 1)
       '
   variables:
+    CI_JULIA_JET_ANALYZER: JET.JETAnalyzer # e.g. JET.JETAnalyzer, JET.OptAnalyzer or other subtype of JET.AbstractAnalyzer
     CI_JULIA_JET_FILE_PATH: test/runtests.jl
   <<: *julia_cache_template
 
@@ -122,8 +134,9 @@ variables:
         analysis_target = Pkg.project().name
         mode = Symbol(ENV["CI_JULIA_JET_MODE"])
         target_defined_modules = parse(Bool, ENV["CI_JULIA_JET_TARGET_DEFINED_MODULES"])
-        @info "Analyzing $analysis_target with mode $mode$(!target_defined_modules ? "" : ", and target_defined_modules")"
-        result = report_package(analysis_target; mode, target_defined_modules)
+        jetconfigs = (mode = mode, target_defined_modules = target_defined_modules)
+        @info "Analyzing package $analysis_target with $jetconfigs"
+        result = report_package(analysis_target; jetconfigs...)
         errors_found = !isempty(JET.get_reports(result))
         if errors_found
           @warn "Analysis completed with errors:"

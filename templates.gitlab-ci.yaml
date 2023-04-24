@@ -18,6 +18,49 @@ variables:
   script:
     - julia --version
 
+.julia.registries:
+  variables:
+    CI_JULIA_REGISTRIES: "" # Comma-separated list of registry URLs
+    CI_JULIA_REGISTRIES_ADD_KNOWN: "true" # Add known registries (requires Julia >= v1.5)
+  script:
+    - |
+      julia --eval '
+        @info "Adding registries (if specified)"
+        if !haskey(ENV, "CI_JULIA_REGISTRIES")
+          exit()
+        end
+        regs = filter(s -> !isempty(strip(s)), split(ENV["CI_JULIA_REGISTRIES"], ","))
+        if isempty(regs)
+          exit()
+        end
+        using Pkg
+        if !haskey(ENV, "CI_JULIA_REGISTRIES_ADD_KNOWN") || parse(Bool, ENV["CI_JULIA_REGISTRIES_ADD_KNOWN"])
+          @info "Adding known registries"
+          if VERSION >= v"1.5"
+            Pkg.Registry.add(String[])
+          else
+            Pkg.instantiate()
+          end
+        else
+          @info "Skipping known registries"
+        end
+        for reg in regs
+          try
+            if VERSION >= v"1.1"
+              @info "Adding registry with URL $reg"
+              Pkg.Registry.add(RegistrySpec(url = String(reg)))
+            else
+              using LibGit2
+              reg_path = joinpath(ENV["JULIA_DEPOT_PATH"], "registries", splitext(basename(reg))[1])
+              @info "Adding registry with URL $reg by cloning it into $reg_path"
+              LibGit2.clone(reg, reg_path)
+            end
+          catch e
+            @warn "Unable to add registry $reg: $e"
+          end
+        end
+      '
+
 .julia.cache: &julia_cache_template
   cache:
     key: $CI_COMMIT_REF_SLUG-julia
@@ -30,6 +73,7 @@ variables:
   stage: build
   script:
     - !reference [.julia.version, script]
+    - !reference [.julia.registries, script]
     - cd $CI_JULIA_PROJECT_PATH
     - julia --project -e 'using Pkg; Pkg.build()'
   <<: *julia_cache_template
@@ -69,6 +113,7 @@ variables:
   stage: test
   script:
     - !reference [.julia.version, script]
+    - !reference [.julia.registries, script]
     - cd $CI_JULIA_PROJECT_PATH
     - |
       julia --project --eval '
@@ -118,6 +163,7 @@ variables:
   stage: test
   script:
     - !reference [.julia.version, script]
+    - !reference [.julia.registries, script]
     - cd $CI_JULIA_PROJECT_PATH
     - |
       julia --project --eval '
@@ -155,6 +201,7 @@ variables:
     CI_JULIA_TEST_THREADS: THREADS_ON
   script:
     - !reference [.julia.version, script]
+    - !reference [.julia.registries, script]
     - cd $CI_JULIA_PROJECT_PATH
     - |
       julia --project -e '

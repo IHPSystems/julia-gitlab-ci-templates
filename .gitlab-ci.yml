@@ -8,6 +8,8 @@ include:
   - /jobs/build.julia-1.4.gitlab-ci.yaml
   - /jobs/build.julia-1.5.gitlab-ci.yaml
   - /jobs/build.julia-lts.gitlab-ci.yaml
+  - /jobs/build.julia-1.7.gitlab-ci.yaml
+  - /jobs/build.julia-1.8.gitlab-ci.yaml
   - /jobs/build.julia-stable.gitlab-ci.yaml
   - /jobs/build.julia-1.gitlab-ci.yaml
 
@@ -20,6 +22,8 @@ include:
   - /jobs/test.julia-1.4.gitlab-ci.yaml
   - /jobs/test.julia-1.5.gitlab-ci.yaml
   - /jobs/test.julia-lts.gitlab-ci.yaml
+  - /jobs/test.julia-1.7.gitlab-ci.yaml
+  - /jobs/test.julia-1.8.gitlab-ci.yaml
   - /jobs/test.julia-stable.gitlab-ci.yaml
   - /jobs/test.julia-1.gitlab-ci.yaml
 
@@ -75,7 +79,7 @@ registries:
   stage: test
   parallel:
     matrix:
-      - CI_JULIA_VERSION: ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1"]
+      - CI_JULIA_VERSION: ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1"]
         CI_JULIA_REGISTRIES: https://github.com/JuliaRegistries/Test.git
   trigger:
     include:
@@ -88,7 +92,7 @@ test_variants:
   stage: test
   parallel:
     matrix:
-      - CI_JULIA_VERSION: ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1"]
+      - CI_JULIA_VERSION: ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1"]
         CI_JULIA_TEST_REPORTS: ["REPORTS_OFF", "REPORTS_ON"]
         CI_JULIA_TEST_THREADS: ["THREADS_OFF", "THREADS_ON"]
   except:

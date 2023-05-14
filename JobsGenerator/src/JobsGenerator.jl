@@ -5,10 +5,10 @@ using YAML
 
 const include_comment = "# include: /templates.gitlab-ci.yaml\n\n"
 
-const julia_versions = ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1"]
+const julia_versions = ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1"]
 
 const julia_lts = "1.6"
-const julia_stable = "1.7"
+const julia_stable = "1.9"
 
 build_job(julia_version::String) = OrderedDict{String,Any}(
     "build.julia-$julia_version" => OrderedDict{String,Any}(

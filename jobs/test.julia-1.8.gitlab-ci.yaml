@@ -1,8 +1,8 @@
 # include: /templates.gitlab-ci.yaml
 
-build.julia-1.9:
+test.julia-1.8:
   variables:
-    CI_JULIA_VERSION: "1.9"
+    CI_JULIA_VERSION: "1.8"
   extends:
     - .julia.setup
-    - .julia.build
+    - .julia.test

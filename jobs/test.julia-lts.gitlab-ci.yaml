@@ -1,6 +1,6 @@
 # include: /templates.gitlab-ci.yaml
 
-test.julia-1.6:
+test.julia-lts:
   variables:
     CI_JULIA_VERSION: "1.6"
   extends:

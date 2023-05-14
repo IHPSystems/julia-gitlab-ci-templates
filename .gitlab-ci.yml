@@ -7,11 +7,13 @@ include:
   - /jobs/build.julia-1.3.gitlab-ci.yaml
   - /jobs/build.julia-1.4.gitlab-ci.yaml
   - /jobs/build.julia-1.5.gitlab-ci.yaml
-  - /jobs/build.julia-lts.gitlab-ci.yaml
+  - /jobs/build.julia-1.6.gitlab-ci.yaml
   - /jobs/build.julia-1.7.gitlab-ci.yaml
   - /jobs/build.julia-1.8.gitlab-ci.yaml
-  - /jobs/build.julia-stable.gitlab-ci.yaml
+  - /jobs/build.julia-1.9.gitlab-ci.yaml
   - /jobs/build.julia-1.gitlab-ci.yaml
+  - /jobs/build.julia-lts.gitlab-ci.yaml
+  - /jobs/build.julia-stable.gitlab-ci.yaml
 
   - /jobs/format.gitlab-ci.yaml
 
@@ -21,11 +23,13 @@ include:
   - /jobs/test.julia-1.3.gitlab-ci.yaml
   - /jobs/test.julia-1.4.gitlab-ci.yaml
   - /jobs/test.julia-1.5.gitlab-ci.yaml
-  - /jobs/test.julia-lts.gitlab-ci.yaml
+  - /jobs/test.julia-1.6.gitlab-ci.yaml
   - /jobs/test.julia-1.7.gitlab-ci.yaml
   - /jobs/test.julia-1.8.gitlab-ci.yaml
-  - /jobs/test.julia-stable.gitlab-ci.yaml
+  - /jobs/test.julia-1.9.gitlab-ci.yaml
   - /jobs/test.julia-1.gitlab-ci.yaml
+  - /jobs/test.julia-lts.gitlab-ci.yaml
+  - /jobs/test.julia-stable.gitlab-ci.yaml
 
 stages:
   - build

@@ -10,8 +10,8 @@ const julia_versions = ["1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", 
 const julia_lts = "1.6"
 const julia_stable = "1.9"
 
-build_job(julia_version::String) = OrderedDict{String,Any}(
-    "build.julia-$julia_version" => OrderedDict{String,Any}(
+build_job(julia_version::String, julia_version_name::String) = OrderedDict{String,Any}(
+    "build.julia-$julia_version_name" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
             "CI_JULIA_VERSION" => julia_version
         ),
@@ -22,8 +22,8 @@ build_job(julia_version::String) = OrderedDict{String,Any}(
     )
 )
 
-test_job(julia_version::String) = OrderedDict{String,Any}(
-    "test.julia-$julia_version" => OrderedDict{String,Any}(
+test_job(julia_version::String, julia_version_name::String) = OrderedDict{String,Any}(
+    "test.julia-$julia_version_name" => OrderedDict{String,Any}(
         "variables" => OrderedDict{String,Any}(
             "CI_JULIA_VERSION" => julia_version
         ),
@@ -52,7 +52,7 @@ function generate_build_jobs_file(julia_version::String; julia_version_name = no
     if julia_version_name === nothing
         julia_version_name = julia_version
     end
-    write_job_file("build", julia_version_name, build_job(julia_version))
+    write_job_file("build", julia_version_name, build_job(julia_version, julia_version_name))
 end
 
 function generate_test_jobs_files()
@@ -68,7 +68,7 @@ function generate_test_jobs_file(julia_version::String; julia_version_name = not
     if julia_version_name === nothing
         julia_version_name = julia_version
     end
-    write_job_file("test", julia_version_name, test_job(julia_version))
+    write_job_file("test", julia_version_name, test_job(julia_version, julia_version_name))
 end
 
 function write_job_file(jobs_type::String, julia_version::String, job::AbstractDict)

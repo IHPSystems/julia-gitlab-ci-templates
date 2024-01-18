@@ -103,7 +103,7 @@ variables:
 
 .julia.jet:
   variables:
-    CI_JULIA_JET_VERSION: latest # latest or e.g., "0.7.11"
+    CI_JULIA_JET_VERSION: latest # latest or e.g., "0.8.25"
     CI_JULIA_JET_MODE: basic # e.g. basic, sound, typo - cf. https://aviatesk.github.io/JET.jl/dev/jetanalysis/#JET.JETAnalyzer
     CI_JULIA_JET_TARGET_DEFINED_MODULES: 'false' # Cf. https://aviatesk.github.io/JET.jl/dev/config/#toplevel-config
 

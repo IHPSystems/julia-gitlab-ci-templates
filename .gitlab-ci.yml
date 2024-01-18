@@ -43,7 +43,7 @@ analyze_package:
   parallel:
     matrix:
       - CI_JULIA_JET_VERSION:
-          - "0.7.11"
+          - "0.8.25"
           - "latest"
         CI_JULIA_JET_MODE: ["basic", "typo"] # sound mode skipped - reports unanalyzed method call
         CI_JULIA_JET_TARGET_DEFINED_MODULES: ["false", "true"]
@@ -59,13 +59,13 @@ analyze_tests:
   parallel:
     matrix:
       - CI_JULIA_JET_VERSION:
-          - "0.7.11"
+          - "0.8.25"
           - "latest"
         CI_JULIA_JET_ANALYZER: ["JET.JETAnalyzer"]
         CI_JULIA_JET_MODE: ["basic", "typo"] # sound mode skipped - reports errors in Julia Base
         CI_JULIA_JET_TARGET_DEFINED_MODULES: ["false", "true"]
       - CI_JULIA_JET_VERSION:
-          - "0.7.11"
+          - "0.8.25"
           - "latest"
         CI_JULIA_JET_ANALYZER: ["JET.OptAnalyzer"]
         CI_JULIA_JET_TARGET_DEFINED_MODULES: ["true"] # "false" reports errors in Julia Test
